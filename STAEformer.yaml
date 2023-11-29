@@ -226,3 +226,42 @@ PEMS03:
     num_heads: 4
     num_layers: 3
     dropout: 0.1
+
+CHUNGNAM:
+  num_nodes: 14
+  in_steps: 6
+  out_steps: 6
+
+  train_size: 0.7
+  val_size: 0.1
+
+  time_of_day: True
+  day_of_week: True
+
+  lr: 0.001
+  weight_decay: 0
+  milestones: [30, 50, 100, 150, 250, 275]
+  lr_decay_rate: 0.75
+  batch_size: 32
+  max_epochs: 1000
+  early_stop: 30
+  use_cl: False
+  cl_step_size: 2500
+  clip_grad: 1e6
+
+  model_args:
+    num_nodes: 14
+    in_steps: 6
+    out_steps: 6
+    steps_per_day: 4  # 하루에 대한 시간 단계 수에 맞게 조정
+    input_dim: 3  # 노드당 특성 수에 맞게 수정
+    output_dim: 3  # 노드당 특성 수에 맞게 수정
+    input_embedding_dim: 96
+    tod_embedding_dim: 24
+    dow_embedding_dim: 24
+    spatial_embedding_dim: 20
+    adaptive_embedding_dim: 20
+    feed_forward_dim: 128
+    num_heads: 4
+    num_layers: 2
+    dropout: 0.1

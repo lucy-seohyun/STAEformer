@@ -36,7 +36,8 @@ def eval_model(model, valset_loader, criterion):
         y_batch = y_batch.to(DEVICE)
 
         out_batch = model(x_batch)
-        out_batch = SCALER.inverse_transform(out_batch)
+        out_batch = SCALER.inverse_transform(out_batch[:, :, :, 0])
+        y_batch = SCALER.inverse_transform(y_batch[:, :, :, 0])
         loss = criterion(out_batch, y_batch)
         batch_loss_list.append(loss.item())
 
@@ -54,7 +55,9 @@ def predict(model, loader):
         y_batch = y_batch.to(DEVICE)
 
         out_batch = model(x_batch)
-        out_batch = SCALER.inverse_transform(out_batch)
+
+        out_batch = SCALER.inverse_transform(out_batch[:, :, :, 0])
+        y_batch = SCALER.inverse_transform(y_batch[:, :, :, 0])
 
         out_batch = out_batch.cpu().numpy()
         y_batch = y_batch.cpu().numpy()
@@ -78,7 +81,9 @@ def train_one_epoch(
         x_batch = x_batch.to(DEVICE)
         y_batch = y_batch.to(DEVICE)
         out_batch = model(x_batch)
-        out_batch = SCALER.inverse_transform(out_batch)
+
+        out_batch = SCALER.inverse_transform(out_batch[:, :, :, 0])
+        y_batch = SCALER.inverse_transform(y_batch[:, :, :, 0])
 
         loss = criterion(out_batch, y_batch)
         batch_loss_list.append(loss.item())
@@ -154,13 +159,13 @@ def train(
     out_str = f"Early stopping at epoch: {epoch+1}\n"
     out_str += f"Best at epoch {best_epoch+1}:\n"
     out_str += "Train Loss = %.5f\n" % train_loss_list[best_epoch]
-    out_str += "Train RMSE = %.5f, MAE = %.5f, MAPE = %.5f\n" % (
+    out_str += "Train RMSE = %.5f, MAE = %.5f, MAPE = %.5f%%\n" % (
         train_rmse,
         train_mae,
         train_mape,
     )
     out_str += "Val Loss = %.5f\n" % val_loss_list[best_epoch]
-    out_str += "Val RMSE = %.5f, MAE = %.5f, MAPE = %.5f" % (
+    out_str += "Val RMSE = %.5f, MAE = %.5f, MAPE = %.5f%%" % (
         val_rmse,
         val_mae,
         val_mape,
@@ -191,7 +196,7 @@ def test_model(model, testset_loader, log=None):
     end = time.time()
 
     rmse_all, mae_all, mape_all = RMSE_MAE_MAPE(y_true, y_pred)
-    out_str = "All Steps RMSE = %.5f, MAE = %.5f, MAPE = %.5f\n" % (
+    out_str = "All Steps RMSE = %.5f, MAE = %.5f, MAPE = %.5f%%\n" % (
         rmse_all,
         mae_all,
         mape_all,
@@ -199,7 +204,7 @@ def test_model(model, testset_loader, log=None):
     out_steps = y_pred.shape[1]
     for i in range(out_steps):
         rmse, mae, mape = RMSE_MAE_MAPE(y_true[:, i, :], y_pred[:, i, :])
-        out_str += "Step %d RMSE = %.5f, MAE = %.5f, MAPE = %.5f\n" % (
+        out_str += "Step %d RMSE = %.5f, MAE = %.5f, MAPE = %.5f%%\n" % (
             i + 1,
             rmse,
             mae,
@@ -214,11 +219,11 @@ if __name__ == "__main__":
     # -------------------------- set running environment ------------------------- #
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--dataset", type=str, default="pems08")
+    parser.add_argument("-d", "--dataset", type=str, default="CHUNGNAM")
     parser.add_argument("-g", "--gpu_num", type=int, default=0)
     args = parser.parse_args()
 
-    seed = torch.randint(1000, (1,)) # set random seed here
+    seed = 42 # set random seed here
     seed_everything(seed)
     set_cpu_num(1)
 
@@ -228,7 +233,7 @@ if __name__ == "__main__":
 
     dataset = args.dataset
     dataset = dataset.upper()
-    data_path = f"../data/{dataset}"
+    data_path = f"./data/{dataset}"
     model_name = STAEformer.__name__
 
     with open(f"{model_name}.yaml", "r") as f:
@@ -281,7 +286,7 @@ if __name__ == "__main__":
     elif dataset in ("PEMS03", "PEMS04", "PEMS07", "PEMS08"):
         criterion = nn.HuberLoss()
     else:
-        raise ValueError("Unsupported dataset.")
+        criterion = nn.L1Loss()
 
     optimizer = torch.optim.Adam(
         model.parameters(),

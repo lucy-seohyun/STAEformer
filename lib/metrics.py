@@ -35,14 +35,14 @@ def MAE(y_true, y_pred):
 
 
 def MAPE(y_true, y_pred, null_val=0):
-    with np.errstate(divide="ignore", invalid="ignore"):
+    with np.errstate(divide="warn", invalid="warn"):
         if np.isnan(null_val):
             mask = ~np.isnan(y_true)
         else:
             mask = np.not_equal(y_true, null_val)
         mask = mask.astype("float32")
         mask /= np.mean(mask)
-        mape = np.abs(np.divide((y_pred - y_true).astype("float32"), y_true))
+        mape = np.abs((y_pred - y_true) / y_true)
         mape = np.nan_to_num(mask * mape)
         return np.mean(mape) * 100
 
