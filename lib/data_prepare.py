@@ -5,10 +5,11 @@ from .utils import print_log, StandardScaler, vrange
 
 # ! X shape: (B, T, N, C)
 
+# 커스텀 스케일러
 import pickle
 class ChainedTransformer():
     def __init__(self, mean, std):
-        minmax = pickle.load(open('./data/CHUNGNAM/scaler.pkl', 'rb'))
+        minmax = pickle.load(open('./data/CHUNGNAM/scaler.pkl', 'rb')) # 전처리 과정에서 사용한 스케일러 읽어오기
         self.scale_ = np.float32(minmax.scale_)
         self.min_ = np.float32(minmax.min_)
         self.scaler = StandardScaler(mean=mean, std=std)
@@ -78,6 +79,7 @@ def get_dataloaders_from_index_data(
     y_val=yv
     y_test=yte
     
+    # X, y 다 변환
     scaler = ChainedTransformer(mean=x_train[..., 0].mean(), std=x_train[..., 0].std())
     x_train[..., 0] = scaler.transform(x_train[..., 0])
     x_val[..., 0] = scaler.transform(x_val[..., 0])

@@ -36,8 +36,8 @@ def eval_model(model, valset_loader, criterion):
         y_batch = y_batch.to(DEVICE)
 
         out_batch = model(x_batch)
-        out_batch = SCALER.inverse_transform(out_batch[:, :, :, 0])
-        y_batch = SCALER.inverse_transform(y_batch[:, :, :, 0])
+        out_batch = SCALER.inverse_transform(out_batch[:, :, :, 0]) # target 특성만 역변환 
+        y_batch = SCALER.inverse_transform(y_batch[:, :, :, 0])     # target 특성만 역변환
         loss = criterion(out_batch, y_batch)
         batch_loss_list.append(loss.item())
 
@@ -56,8 +56,8 @@ def predict(model, loader):
 
         out_batch = model(x_batch)
 
-        out_batch = SCALER.inverse_transform(out_batch[:, :, :, 0])
-        y_batch = SCALER.inverse_transform(y_batch[:, :, :, 0])
+        out_batch = SCALER.inverse_transform(out_batch[:, :, :, 0]) # target 특성만 역변환
+        y_batch = SCALER.inverse_transform(y_batch[:, :, :, 0])     # target 특성만 역변환
 
         out_batch = out_batch.cpu().numpy()
         y_batch = y_batch.cpu().numpy()
@@ -82,8 +82,8 @@ def train_one_epoch(
         y_batch = y_batch.to(DEVICE)
         out_batch = model(x_batch)
 
-        out_batch = SCALER.inverse_transform(out_batch[:, :, :, 0])
-        y_batch = SCALER.inverse_transform(y_batch[:, :, :, 0])
+        out_batch = SCALER.inverse_transform(out_batch[:, :, :, 0]) # target 특성만 역변환
+        y_batch = SCALER.inverse_transform(y_batch[:, :, :, 0])     # target 특성만 역변환
 
         loss = criterion(out_batch, y_batch)
         batch_loss_list.append(loss.item())
@@ -286,7 +286,7 @@ if __name__ == "__main__":
     elif dataset in ("PEMS03", "PEMS04", "PEMS07", "PEMS08"):
         criterion = nn.HuberLoss()
     else:
-        criterion = nn.L1Loss()
+        criterion = nn.L1Loss() # MAE
 
     optimizer = torch.optim.Adam(
         model.parameters(),

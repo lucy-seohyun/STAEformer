@@ -1,3 +1,12 @@
+# 선문대 - 에이아이리더 ICP STAEformer 모델 코드
+논문 Liu H. et al. 2023 "Spatio-Temporal Adaptive Embedding Makes Vanilla Transformer SOTA for Traffic Forecasting" 코드를 충남 지역 인구수 예측을 위해 변형
+
+수정된 파일들
+- [모델 및 훈련 하이퍼파라미터](/model/STAEformer.yaml)
+- [D2STGNN 전처리 코드](https://github.com/lucy-seohyun/D2STGNN/datasets/raw_data/CHUNGNAM/generate_training_data.py)의 [결과물 저장 폴더](/data/CHUNGNAM)
+- [데이터 적제 코드 및 커스텀 스케일러](/lib/data_prepare.py)
+- [역변환 과정 수정](/model/train.py)
+
 ## STAEformer: Spatio-Temporal Adaptive Embedding Transformer
 
 #### H. Liu*, Z. Dong*, R. Jiang#, J. Deng, J. Deng, Q. Chen, X. Song#, "Spatio-Temporal Adaptive Embedding Makes Vanilla Transformer SOTA for Traffic Forecasting", Proc. of 32nd ACM International Conference on Information and Knowledge Management (CIKM), 2023. (*Equal Contribution, #Corresponding Author)
